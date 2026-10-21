@@ -1,0 +1,38 @@
+# The ML pipeline as a DAG. DVC re-runs a stage only when one of its
+# deps (code/data) or params changed since the last run (see dvc.lock).
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+      - src/prepare.py
+      - data/raw/data.csv
+    params:
+      - prepare
+    outs:
+      - data/prepared
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - data/prepared
+    params:
+      - train
+    outs:
+      - models/model.pkl
+
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - models/model.pkl
+      - data/prepared
+    metrics:
+      - metrics.json:
+          cache: false
+    plots:
+      - eval/predictions.csv:
+          cache: false
+          template: confusion
+          x: actual
+          y: predicted

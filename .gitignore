@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
+# outputs, in case someone runs the scripts directly in this folder
+data/
+models/
+eval/
+metrics.json
+dvc_plots/
