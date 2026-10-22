@@ -1,17 +1,17 @@
-# Demo transcript (backup)
+# Demo transcript
 
-Full output of `python demo/run_demo.py --auto` with DVC 3.67.1. Experiment names are random and will differ on your run.
+Output of `python demo/run_demo.py --auto`. Experiment names are random and will be different on your run.
 
 ```text
 Sandbox ready: dvc-demo-sandbox
 
-[1/10] Start a DVC project inside a Git repo
-DVC sits on top of Git. `dvc init` adds a small .dvc/ folder.
+[1/10] Set up DVC
+dvc init adds a small .dvc/ folder to the git repo.
 $ dvc init -q
 $ git commit -q -m 'Initialize DVC'
 
-[2/10] Configure remote storage
-Big files go to a remote (S3, GCS, Azure, SSH, Drive...). Here it is just a local folder.
+[2/10] Add remote storage
+This is where DVC uploads data. Here it's a local folder instead of S3 or Drive.
 $ dvc remote add -d storage ../dvc-demo-storage
 Setting 'storage' as a default remote.
 $ dvc config core.autostage true
@@ -23,8 +23,8 @@ $ cat .dvc/config
     url = ../../dvc-demo-storage
 $ git commit -q -am 'Add DVC remote'
 
-[3/10] Data v1 arrives -> track it with DVC
-`dvc add` moves the file into the cache and leaves a tiny pointer file (.dvc) for Git. The CSV itself is git-ignored. (autostage = DVC git-adds the pointer for us.)
+[3/10] Track data v1
+dvc add moves the data into the cache. Git only gets the small .dvc file.
 $ python src/make_dataset.py --version 1
 Wrote data v1: 150 rows -> data/raw/data.csv
 $ dvc add data/raw/data.csv
@@ -40,7 +40,7 @@ A  data/raw/data.csv.dvc
 $ git commit -q -m 'Data v1: 150 rows'
 
 [4/10] Run the pipeline
-dvc.yaml defines prepare -> train -> evaluate. `dvc repro` runs it and records the hash of every input/output in dvc.lock.
+dvc repro runs prepare -> train -> evaluate and saves the hashes in dvc.lock.
 $ dvc dag
   +-----------------------+  
   | data/raw/data.csv.dvc |  
@@ -91,7 +91,7 @@ $ dvc push
 5 files pushed
 
 [5/10] Data v2 arrives
-DVC notices the data changed. Git only sees a new hash in the pointer file.
+DVC sees the data changed. For git it's just a new hash.
 $ python src/make_dataset.py --version 2
 Wrote data v2: 569 rows -> data/raw/data.csv
 $ dvc status
@@ -116,8 +116,8 @@ index c17f329..991fe8d 100644
    hash: md5
    path: data.csv
 
-[6/10] Reproduce and compare
-Re-run only what is affected, then compare metrics across Git revisions.
+[6/10] Retrain and compare
+Same code, new data.
 $ dvc repro
 'data/raw/data.csv.dvc' didn't change, skipping
 Running stage 'prepare':
@@ -147,8 +147,8 @@ metrics.json  f1        0.8276  0.9537  0.1261
 metrics.json  n_test    45      171     126
 metrics.json  roc_auc   0.821   0.9893  0.1683
 
-[7/10] Nothing changed -> nothing re-runs
-Every stage's hashes match dvc.lock, so DVC skips all of them.
+[7/10] Run again with no changes
+Nothing changed, so every stage is skipped.
 $ dvc repro
 'data/raw/data.csv.dvc' didn't change, skipping
 Stage 'prepare' didn't change, skipping
@@ -156,8 +156,8 @@ Stage 'train' didn't change, skipping
 Stage 'evaluate' didn't change, skipping
 Data and pipelines are up to date.
 
-[8/10] Time travel to v1.0
-`git checkout` restores the pointer files; `dvc checkout` restores the matching data and model from the cache.
+[8/10] Go back to v1.0
+git checkout brings back the old .dvc files, dvc checkout brings back the matching data.
 $ git checkout -q v1.0
 $ dvc checkout
 M       data/prepared/
@@ -180,8 +180,8 @@ M       models/model.pkl
 $ rows data/raw/data.csv
 data/raw/data.csv: 569 rows
 
-[9/10] A teammate clones the repo (or your laptop dies)
-Delete the data and the local cache. `dvc pull` restores everything from remote storage.
+[9/10] Restore from storage
+Delete the data and the cache, then get everything back with dvc pull.
 $ du .dvc/cache
 .dvc/cache: 20 files, 747 KB
 $ rm .dvc/cache data/raw/data.csv models
@@ -195,10 +195,10 @@ data/raw/data.csv: 569 rows
 $ dvc status
 Data and pipelines are up to date.
 
-[10/10] Bonus: experiments
-Try hyperparameters without new commits. Note `prepare` is skipped: its inputs did not change.
+[10/10] Experiments
+Try other parameters without committing.
 $ dvc exp run -S train.n_estimators=10 -S train.max_depth=2
-Reproducing experiment 'leery-vang'
+Reproducing experiment 'olive-veep'
 'data/raw/data.csv.dvc' didn't change, skipping
 Stage 'prepare' didn't change, skipping
 Running stage 'train':
@@ -211,15 +211,15 @@ Running stage 'evaluate':
 evaluate: {'accuracy': 0.9298, 'f1': 0.9444, 'roc_auc': 0.9809, 'n_test': 171}
 Updating lock file 'dvc.lock'
 
-Ran experiment(s): leery-vang
+Ran experiment(s): olive-veep
 Experiment results have been applied to your workspace.
 $ dvc exp show --no-pager --md --drop 'Created|State|Executor|prepare.*|train.seed|data.*|src.*|models.*'
 | Experiment               | accuracy   | f1     | roc_auc   | n_test   | train.n_estimators   | train.max_depth   |
 |--------------------------|------------|--------|-----------|----------|----------------------|-------------------|
 | workspace                | 0.9298     | 0.9444 | 0.9809    | 171      | 10                   | 2                 |
 | main                     | 0.9415     | 0.9537 | 0.9893    | 171      | 100                  | 5                 |
-| └── 3374553 [leery-vang] | 0.9298     | 0.9444 | 0.9809    | 171      | 10                   | 2                 |
+| └── 153a773 [olive-veep] | 0.9298     | 0.9444 | 0.9809    | 171      | 10                   | 2                 |
 
 
-Demo complete. Explore it yourself: cd dvc-demo-sandbox
+Done.
 ```
