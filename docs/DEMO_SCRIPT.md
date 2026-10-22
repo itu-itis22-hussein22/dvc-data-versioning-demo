@@ -11,7 +11,7 @@ Every command works in PowerShell, Git Bash, macOS and Linux.
 
 From the repo folder, with your virtual environment active:
 
-```bash
+```
 python demo/run_demo.py --setup
 cd ../dvc-demo-sandbox
 dvc init
@@ -41,7 +41,7 @@ No command. Switch to VS Code and show `dvc.yaml`.
 
 ## Step 2 · Data v1 arrives (0:30 – 1:15)
 
-```bash
+```
 python src/make_dataset.py --version 1
 dvc add data/raw/data.csv
 cat data/raw/data.csv.dvc
@@ -50,7 +50,7 @@ cat data/raw/data.csv.dvc
 > "My first dataset, 150 messy rows. DVC moved it into its cache,
 > and Git only gets this 5-line file with a hash."
 
-```bash
+```
 git commit -m "Data v1"
 ```
 
@@ -58,14 +58,14 @@ git commit -m "Data v1"
 
 ## Step 3 · Train on v1 (1:15 – 2:00)
 
-```bash
+```
 dvc repro
 dvc metrics show
 ```
 
 > "DVC ran all three stages. Accuracy is 0.78."
 
-```bash
+```
 git add -A
 git commit -m "Model v1"
 git tag v1.0
@@ -79,14 +79,14 @@ dvc push
 
 ## Step 4 · Data v2 arrives ⭐ main moment (2:00 – 3:00)
 
-```bash
+```
 python src/make_dataset.py --version 2
 dvc status
 ```
 
 > "New, clean data arrived, 569 rows. DVC noticed immediately."
 
-```bash
+```
 dvc add data/raw/data.csv
 dvc repro
 git add -A
@@ -103,7 +103,7 @@ dvc metrics diff v1.0 v2.0
 
 ## Step 5 · Go back in time (3:00 – 3:45)
 
-```bash
+```
 git checkout v1.0
 dvc checkout
 cat metrics.json
@@ -114,7 +114,7 @@ cat metrics.json
 
 (A "detached HEAD" warning is normal. Ignore it.)
 
-```bash
+```
 git checkout main
 dvc checkout
 ```
@@ -137,16 +137,16 @@ Add this after Step 5. It shows a teammate getting everything from storage.
 Delete the local data. **Pick the line for your terminal:**
 
 PowerShell:
-```powershell
+```
 Remove-Item -Recurse -Force .dvc/cache, data/raw/data.csv, models/model.pkl
 ```
 Git Bash / macOS / Linux:
-```bash
+```
 rm -rf .dvc/cache data/raw/data.csv models/model.pkl
 ```
 
 Then:
-```bash
+```
 dvc pull
 ```
 
