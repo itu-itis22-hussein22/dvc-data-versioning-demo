@@ -2,23 +2,36 @@
 
 **The one message:** same code, new data, and DVC remembers which data made which model.
 
-Copy-paste each block, press Enter, then say the line under it.
-Every command works in PowerShell, Git Bash, macOS and Linux.
+**Paste ONE line at a time** and press Enter after each. Then say the line under the block.
+Use PowerShell. Never type `bash`.
 
 ---
 
 ## Step 0 · Setup (before you present, NOT live)
 
-From the repo folder, with your virtual environment active:
+Open a new PowerShell window:
+
+```
+conda activate dvc
+cd ~\Desktop\dvc-data-versioning-demo
+```
+
+Your prompt should now start with `(dvc)` and end with `dvc-data-versioning-demo>`.
 
 ```
 python demo/run_demo.py --setup
-cd ../dvc-demo-sandbox
+cd ..\dvc-demo-sandbox
+```
+
+Your prompt must now end with `dvc-demo-sandbox>`. Every command from here on runs in this folder.
+
+```
 dvc init
 git commit -m "Initialize DVC"
 dvc remote add -d storage ../dvc-demo-storage
 dvc config core.autostage true
 git commit -am "Add remote"
+cls
 ```
 
 Then:
@@ -26,7 +39,9 @@ Then:
 - Open `dvc.yaml` in VS Code next to the terminal.
 - Open the `docs/screenshots/` folder in a tab, in case something breaks.
 
-To start over for another rehearsal: `cd ../dvc-data-versioning-demo` and run Step 0 again.
+To start over for another rehearsal: `cd ..\dvc-data-versioning-demo`, then run Step 0 again from `python demo/run_demo.py --setup`.
+
+If you ever see `>>` or `>` at the start of a line, press **Ctrl + C**.
 
 ---
 
