@@ -2,21 +2,33 @@
 
 **Total: 4 minutes.** **Main message:** same code, new data, and DVC remembers which data made which model.
 
-**How to use this file:** each grey box is ONE line. Copy the whole line, paste it into PowerShell,
-press Enter once. All the commands in it run one after another. Then say the text under it.
+**How to use this file:** copy the **whole grey box**, paste it into PowerShell once.
+The commands run one after another. If the last command doesn't start by itself, press **Enter** once.
+Then say the text under it.
+
+> If Windows Terminal asks *"You are about to paste text that contains multiple lines"*, click **Paste anyway**.
 
 ---
 
 ## BEFORE your turn (not in front of the class)
 
-Open a new **PowerShell** window (not `bash`). Paste these two lines, one at a time:
+Open a new **PowerShell** window (not `bash`). Paste these two boxes, one at a time:
 
 ```
-conda activate dvc; cd ~\Desktop\dvc-data-versioning-demo; git pull
+conda activate dvc
+cd ~\Desktop\dvc-data-versioning-demo
+git pull
 ```
 
 ```
-python demo/run_demo.py --setup; cd ..\dvc-demo-sandbox; dvc init -q; git commit -q -m "Initialize DVC"; dvc remote add -d storage ../dvc-demo-storage; dvc config core.autostage true; git commit -q -am "Add remote"; cls
+python demo/run_demo.py --setup
+cd ..\dvc-demo-sandbox
+dvc init -q
+git commit -q -m "Initialize DVC"
+dvc remote add -d storage ../dvc-demo-storage
+dvc config core.autostage true
+git commit -q -am "Add remote"
+cls
 ```
 
 Check: your prompt ends with **`dvc-demo-sandbox>`** and the screen is empty.
@@ -48,7 +60,10 @@ Then get your screen ready:
 
 **Paste:**
 ```
-python src/make_dataset.py --version 1; dvc add data/raw/data.csv; cat data/raw/data.csv.dvc; git commit -q -m "Data v1"
+python src/make_dataset.py --version 1
+dvc add data/raw/data.csv
+cat data/raw/data.csv.dvc
+git commit -q -m "Data v1"
 ```
 
 **You'll see:** `150 rows`, then a small file with `md5: ...`
@@ -62,7 +77,8 @@ python src/make_dataset.py --version 1; dvc add data/raw/data.csv; cat data/raw/
 
 **Paste:**
 ```
-dvc repro; dvc metrics show
+dvc repro
+dvc metrics show
 ```
 
 **You'll see:** `Running stage 'prepare'`, `'train'`, `'evaluate'`, then a table with **accuracy 0.7778**
@@ -76,7 +92,10 @@ dvc repro; dvc metrics show
 
 **Paste:**
 ```
-git add -A; git commit -q -m "Model v1"; git tag v1.0; dvc push
+git add -A
+git commit -q -m "Model v1"
+git tag v1.0
+dvc push
 ```
 
 **You'll see:** `5 files pushed`
@@ -89,7 +108,8 @@ git add -A; git commit -q -m "Model v1"; git tag v1.0; dvc push
 
 **Paste:**
 ```
-python src/make_dataset.py --version 2; dvc status
+python src/make_dataset.py --version 2
+dvc status
 ```
 
 **You'll see:** `569 rows`, then `modified: data\raw\data.csv`
@@ -102,7 +122,12 @@ python src/make_dataset.py --version 2; dvc status
 
 **Paste:**
 ```
-dvc add data/raw/data.csv; dvc repro; git add -A; git commit -q -m "Model v2"; git tag v2.0; dvc push
+dvc add data/raw/data.csv
+dvc repro
+git add -A
+git commit -q -m "Model v2"
+git tag v2.0
+dvc push
 ```
 
 **You'll see:** the 3 stages running again, accuracy **0.9415**, `5 files pushed`
@@ -129,7 +154,9 @@ dvc metrics diff v1.0 v2.0
 
 **Paste:**
 ```
-git checkout -q v1.0; dvc checkout; cat metrics.json
+git checkout -q v1.0
+dvc checkout
+cat metrics.json
 ```
 
 **You'll see:** `M data\raw\data.csv`, `M models\model.pkl`, then **accuracy 0.7778**
@@ -142,7 +169,9 @@ git checkout -q v1.0; dvc checkout; cat metrics.json
 
 **Paste:**
 ```
-git checkout -q main; dvc checkout; cat metrics.json
+git checkout -q main
+dvc checkout
+cat metrics.json
 ```
 
 **You'll see:** accuracy **0.9415** again
@@ -169,7 +198,8 @@ git --no-pager log --oneline
 
 **"What if my laptop dies / a teammate clones the repo?"**
 ```
-Remove-Item -Recurse -Force .dvc/cache, data/raw/data.csv, models/model.pkl; dvc pull
+Remove-Item -Recurse -Force .dvc/cache, data/raw/data.csv, models/model.pkl
+dvc pull
 ```
 > "I just deleted my data and model. One `dvc pull` and everything comes back from storage."
 
@@ -197,4 +227,4 @@ Remove-Item -Recurse -Force .dvc/cache, data/raw/data.csv, models/model.pkl; dvc
 ```
 cd ~\Desktop\dvc-data-versioning-demo
 ```
-Then paste the second "BEFORE your turn" line again.
+Then paste the second "BEFORE your turn" box again.
