@@ -1,38 +1,44 @@
-# The ML pipeline as a DAG. DVC re-runs a stage only when one of its
-# deps (code/data) or params changed since the last run (see dvc.lock).
+# My ML pipeline: prepare -> train -> evaluate
+# DVC runs these steps in order with `dvc repro`.
+# It only re-runs a step if something it uses has changed.
+
 stages:
+
+  # Step 1: split the raw data into train and test sets
   prepare:
-    cmd: python src/prepare.py
-    deps:
+    cmd: python src/prepare.py      # the command to run
+    deps:                           # files this step uses
       - src/prepare.py
       - data/raw/data.csv
-    params:
+    params:                         # settings from params.yaml (test_size, seed)
       - prepare
-    outs:
+    outs:                           # files this step creates (saved by DVC)
       - data/prepared
 
+  # Step 2: train a random forest on the training set
   train:
     cmd: python src/train.py
     deps:
       - src/train.py
-      - data/prepared
-    params:
+      - data/prepared               # uses the output of Step 1
+    params:                         # settings from params.yaml (n_estimators, max_depth)
       - train
     outs:
-      - models/model.pkl
+      - models/model.pkl            # the trained model (saved by DVC, not Git)
 
+  # Step 3: test the model and save the scores
   evaluate:
     cmd: python src/evaluate.py
     deps:
       - src/evaluate.py
-      - models/model.pkl
-      - data/prepared
-    metrics:
+      - models/model.pkl            # uses the model from Step 2
+      - data/prepared               # uses the test set from Step 1
+    metrics:                        # scores file, used by `dvc metrics show / diff`
       - metrics.json:
-          cache: false
-    plots:
+          cache: false              # small file, so keep it in Git
+    plots:                          # data for a confusion matrix, used by `dvc plots`
       - eval/predictions.csv:
-          cache: false
+          cache: false              # small file, so keep it in Git
           template: confusion
           x: actual
           y: predicted
