@@ -44,7 +44,7 @@ Same code, same parameters. Only the data changed, and DVC records exactly which
 Requires **Python 3.9+** and **Git**.
 
 ```bash
-git clone https://github.com/ayah-hussain/dvc-data-versioning-demo.git
+git clone https://github.com/itu-itis22-hussein22/dvc-data-versioning-demo.git
 cd dvc-data-versioning-demo
 
 python -m venv .venv
