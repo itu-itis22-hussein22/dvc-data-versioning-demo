@@ -62,6 +62,10 @@ python demo/run_demo.py --auto     # run all steps without pausing
 python demo/run_demo.py --from 5   # jump to a step (after a full run)
 ```
 
+**Prefer to type each command yourself?** Run `python demo/run_demo.py --setup`, then
+`cd ../dvc-demo-sandbox` and follow [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md), which lists every
+command in order with what to say.
+
 The runner copies `src/`, `dvc.yaml` and `params.yaml` into a fresh sandbox folder
 **next to** this repository and runs every command there, so this repo is never modified
 and the demo can be repeated as often as you like:

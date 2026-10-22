@@ -177,11 +177,19 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--auto", action="store_true", help="don't pause between steps")
     ap.add_argument("--from", dest="start", type=int, default=1, help="first step to run")
+    ap.add_argument("--setup", action="store_true",
+                    help="only create a fresh sandbox, then type the commands yourself "
+                         "(see docs/DEMO_SCRIPT.md)")
     a = ap.parse_args()
 
     if sys.platform == "win32":
         import os
         os.system("")  # enable ANSI colours in the Windows console
+
+    if a.setup:
+        setup_sandbox()
+        print(f"\nNext:  cd {SANDBOX}\nthen follow docs/DEMO_SCRIPT.md")
+        return
 
     if a.start == 1:
         setup_sandbox()
